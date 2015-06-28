@@ -2,29 +2,28 @@
 namespace tests\unit\Poensis\Origami\Entity;
 
 use mageekguy\atoum;
-use Poensis\Origami\Entity\User as Entity;
 
 class User extends atoum
 {
     public function test___emailGetterSetter()
     {
         $this
-            ->given($entity = new Entity())
+            ->given($this->newTestedInstance)
                 ->and($email = uniqid())
-                ->and($entity->setEmail($email))
+                ->and($this->testedInstance->setEmail($email))
             ->then
-            ->string($entity->getEmail())
+            ->string($this->testedInstance->getEmail())
                 ->isIdenticalTo($email);
     }
 
     public function test___passwordGetterSetter()
     {
         $this
-            ->given($entity = new Entity())
+            ->given($this->newTestedInstance)
                 ->and($password = uniqid())
-                ->and($entity->setPassword($password))
+                ->and($this->testedInstance->setPassword($password))
             ->then
-            ->string($entity->getPassword())
+            ->string($this->testedInstance->getPassword())
                 ->isIdenticalTo($password);
     }
 }
