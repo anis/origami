@@ -36,4 +36,12 @@ class User
     {
         $this->password = $password;
     }
+
+    public function toArray()
+    {
+        return array(
+            'email'    => $this->getEmail(),
+            'password' => $this->getPassword(),
+        );
+    }
 }

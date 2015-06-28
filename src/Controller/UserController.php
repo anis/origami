@@ -15,16 +15,13 @@ class UserController
 
     public function listAction()
     {
-        $users = $this->users->findAll();
-        $response = array();
+        $users = array_map(
+            function ($user) {
+                return $user->toArray();
+            },
+            $this->users->findAll()
+        );
 
-        foreach ($users as $user) {
-            $response[] = array(
-                'email'    => $user->getEmail(),
-                'password' => $user->getPassword(),
-            );
-        }
-
-        return new JsonResponse($response);
+        return new JsonResponse($users);
     }
 }

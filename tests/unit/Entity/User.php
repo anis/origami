@@ -26,4 +26,20 @@ class User extends atoum
             ->string($this->testedInstance->getPassword())
                 ->isIdenticalTo($password);
     }
+
+    public function test___toArray()
+    {
+        $this
+            ->given($this->newTestedInstance)
+                ->and($email = uniqid())
+                ->and($this->testedInstance->setEmail($email))
+                ->and($password = uniqid())
+                ->and($this->testedInstance->setPassword($password))
+            ->then
+                ->array($this->testedInstance->toArray())
+                    ->isIdenticalTo(array(
+                        'email'    => $email,
+                        'password' => $password,
+                    ));
+    }
 }

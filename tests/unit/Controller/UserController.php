@@ -56,10 +56,7 @@ class UserController extends atoum
 
         return array(
             'entity' => $user,
-            'raw'    => array(
-                'email'    => $user->getEmail(),
-                'password' => $user->getPassword(),
-            )
+            'raw'    => $user->toArray(),
         );
     }
 
