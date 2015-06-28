@@ -3,7 +3,6 @@ namespace tests\unit\Poensis\Origami\Controller;
 
 use mageekguy\atoum;
 use Symfony\Component\HttpFoundation\Request;
-use Poensis\Origami\Controller\UserController as Controller;
 
 class UserController extends atoum
 {
