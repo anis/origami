@@ -1,0 +1,22 @@
+{
+    "name": "poensis/origami",
+    "description": "Outil de gestion administrative pour freelances en EURL",
+    "require": {
+        "silex/silex": "dev-master"
+    },
+    "require-dev": {
+        "atoum/atoum": "^2.1"
+    },
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Anis Safine",
+            "email": "anis@poensis.fr"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Poensis\\Origami\\": "src/"
+        }
+    }
+}
