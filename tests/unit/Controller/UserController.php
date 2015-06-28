@@ -16,6 +16,15 @@ class UserController extends atoum
                 ->isIdenticalTo(200);
     }
 
+    public function test___listAction___returnsJson()
+    {
+        $this
+            ->given($response = $this->get('/users/'))
+            ->then
+            ->object($response)
+                ->isInstanceOf('Symfony\Component\HttpFoundation\JsonResponse');
+    }
+
     protected function get($uri)
     {
         global $app;
