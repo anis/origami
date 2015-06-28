@@ -2,7 +2,8 @@
     "name": "poensis/origami",
     "description": "Outil de gestion administrative pour freelances en EURL",
     "require": {
-        "silex/silex": "dev-master"
+        "silex/silex": "dev-master",
+        "dflydev/doctrine-orm-service-provider": "^2.0"
     },
     "require-dev": {
         "atoum/atoum": "^2.1"
