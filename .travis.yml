@@ -4,7 +4,7 @@ php:
 install:
     - composer install
 before_script:
-    - mysql -e "CREATE DATABASE IF NOT EXISTS `origami`;" -uroot
+    - mysql -e "CREATE DATABASE IF NOT EXISTS origami;" -uroot
     - ./vendor/bin/doctrine orm:schema-tool:create
 script:
     - ./vendor/bin/atoum -d ./tests/unit/ -bf ./tests/unit/.bootstrap.atoum.php
