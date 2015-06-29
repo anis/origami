@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/anis/origami.svg)](https://travis-ci.org/anis/origami)
+
 # Origami
 
 Origami est un outil simple de gestion administrative pour freelances en EURL. Origami vous permet d'établir votre comptabilité client, suivre vos paiements, calculer et prévoir vos cotisations sociales et impositions, ou encore optimiser votre revenu personnel.
