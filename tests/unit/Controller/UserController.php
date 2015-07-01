@@ -8,6 +8,10 @@ use Poensis\Origami\Controller\UserController as Controller;
 
 class UserController extends atoum
 {
+    /***************************************************************************
+     * List action
+     **************************************************************************/
+
     public function test___listAction___returns200()
     {
         $this
@@ -28,14 +32,14 @@ class UserController extends atoum
 
     public function test___listAction___returnsAllUsers()
     {
-        // Create the mock
+        // Inject fake users into the business code
         $fakeUsers = array();
         for ($i = 0; $i < 3; $i++) {
-            $fakeUsers[] = $this->createUser();
+            $fakeUsers[] = $this->getNewUser();
         }
 
-        $mock = $this->mockRepository('Poensis\Origami\Repository\UserRepository');
-        $mock->getMockController()->findAll = function () use ($fakeUsers) {
+        $mock = $this->getRepository('Poensis\Origami\Entity\User');
+        $this->calling($mock)->findAll = function () use ($fakeUsers) {
             return array_map(function ($user) { return $user['entity']; }, $fakeUsers);
         };
 
@@ -44,9 +48,13 @@ class UserController extends atoum
             ->given($response = $this->get('/users/'))
                 ->and($content = json_decode($response->getContent(), true))
             ->then
-                ->array($content)
-                    ->isIdenticalTo(array_map(function ($user) { return $user['raw']; }, $fakeUsers));
+            ->array($content)
+                ->isIdenticalTo(array_map(function ($user) { return $user['raw']; }, $fakeUsers));
     }
+
+    /***************************************************************************
+     * Create action
+     **************************************************************************/
 
     public function test___createAction___returns200()
     {
@@ -57,7 +65,16 @@ class UserController extends atoum
                 ->isIdenticalTo(200);
     }
 
-    protected function createUser()
+    /***************************************************************************
+     * Utilities
+     **************************************************************************/
+
+    /**
+     * Creates a new full instance of User
+     *
+     * @return array
+     */
+    protected function getNewUser()
     {
         $user = new User();
         $user->setUsername(uniqid());
@@ -70,27 +87,52 @@ class UserController extends atoum
         );
     }
 
-    protected function mockRepository($repositoryClass)
+    /**
+     * Creates a mock repository for the given entity
+     *
+     * The mock is automatically injected into the business code.
+     *
+     * @param string $entityName Name of the entity class
+     *
+     * @return \Doctrine\Common\Persistence\ObjectRepository
+     */
+    protected function getRepository($entityName)
     {
-        if (!class_exists($repositoryClass)) {
-            $repositoryClass = 'Doctrine\ORM\EntityRepository';
+        // Guess the name of the repository class, based on the entity name
+        $repositoryName = str_replace('Entity\\', 'Repository\\', $entityName) . 'Repository';
+
+        if (!class_exists($repositoryName)) {
+            $repositoryName = 'Doctrine\ORM\EntityRepository';
         }
 
-        $mockClass = '\mock\\' . $repositoryClass;
+        $mockName = '\mock\\' . $repositoryName;
 
+        // Create the mock instance
         $this->mockGenerator->orphanize('__construct');
         $this->mockGenerator->shuntParentClassCalls();
-        $mockRepository = new $mockClass();
+        $mock = new $mockName();
         $this->mockGenerator->unshuntParentClassCalls();
 
+        // Inject the mock into the business code
         global $app;
-        $app['users'] = $app->factory(function () use ($mockRepository) {
-            return new Controller($mockRepository);
+        $app['users'] = $app->factory(function () use ($mock) {
+            return new Controller($mock);
         });
 
-        return $mockRepository;
+        return $mock;
     }
 
+    /**
+     * Syntaxic sugar for faking HTTP requests to the application
+     *
+     * The parameter $arguments should respect the following definition:
+     *  [0] string $uri        URI to be requested (actually, the path only)
+     *
+     * @param string $verb      HTTP verb (GET, POST, ...)
+     * @param array  $arguments Other request arguments
+     *
+     * @return Symfony\Component\HttpFoundation\Response
+     */
     public function __call($method, $arguments)
     {
         if (!in_array($method, array('get', 'post'))) {
@@ -100,6 +142,11 @@ class UserController extends atoum
         list($uri) = $arguments;
 
         global $app;
-        return $app->handle(Request::create($uri, strtoupper($method)));
+        return $app->handle(
+            Request::create(
+                $uri,
+                strtoupper($method)
+            )
+        );
     }
 }
