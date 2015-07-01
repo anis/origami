@@ -1,25 +1,19 @@
 <?php
 namespace Poensis\Origami\Controller;
 
+use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\ORM\EntityRepository;
 
 class UserController
 {
-    protected $users;
-
-    public function __construct(EntityRepository $users)
+    public function listAction(Application $app)
     {
-        $this->users = $users;
-    }
-
-    public function listAction()
-    {
+        $repository = $app['orm.em']->getRepository('Poensis\Origami\Entity\User');
         $users = array_map(
             function ($user) {
                 return $user->toArray();
             },
-            $this->users->findAll()
+            $repository->findAll()
         );
 
         return new JsonResponse($users);

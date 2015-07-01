@@ -70,6 +70,13 @@ class UserController extends atoum
      **************************************************************************/
 
     /**
+     * Mocked entity manager
+     *
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $entityManager = null;
+
+    /**
      * Creates a new full instance of User
      *
      * @return array
@@ -85,6 +92,23 @@ class UserController extends atoum
             'entity' => $user,
             'raw'    => $user->toArray(),
         );
+    }
+
+    /**
+     * Creates a mock entity manager and injects it into the business code
+     *
+     * @returns \Doctrine\ORM\EntityManager
+     */
+    protected function getEntityManager()
+    {
+        global $app;
+
+        if ($this->entityManager === null) {
+            $this->entityManager = new \mock\Doctrine\ORM\EntityManager();
+            $app['orm.em'] = $this->entityManager;
+        }
+
+        return $app['orm.em'];
     }
 
     /**
@@ -114,10 +138,11 @@ class UserController extends atoum
         $this->mockGenerator->unshuntParentClassCalls();
 
         // Inject the mock into the business code
-        global $app;
-        $app['users'] = $app->factory(function () use ($mock) {
-            return new Controller($mock);
-        });
+        $this->calling($this->getEntityManager())->getRepository = function ($requestedEntity) use ($mock, $entityName) {
+            if ($requestedEntity === $entityName) {
+                return $mock;
+            }
+        };
 
         return $mock;
     }
