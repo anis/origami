@@ -152,6 +152,14 @@ class UserController extends atoum
      *
      * The parameter $arguments should respect the following definition:
      *  [0] string $uri        URI to be requested (actually, the path only)
+     *  [1] array  $parameters Parameters (POST, GET, ...)
+     *  [2] array  $cookies    Cookies
+     *  [3] array  $files      Files
+     *  [4] array  $server     Server
+     *  [5] string $content    Request body (content)
+     *
+     * You can learn more about each of these arguments in the documentation of
+     * Symfony\Component\HttpFoundation\Request::create()
      *
      * @param string $verb      HTTP verb (GET, POST, ...)
      * @param array  $arguments Other request arguments
@@ -164,13 +172,18 @@ class UserController extends atoum
             return parent::__call($method, $arguments);
         }
 
-        list($uri) = $arguments;
+        list($uri, $parameters, $cookies, $files, $server, $content) = array_merge($arguments, array_fill(0, 6, null));
 
         global $app;
         return $app->handle(
             Request::create(
                 $uri,
-                strtoupper($method)
+                strtoupper($method),
+                is_array($parameters) ? $parameters : array(),
+                is_array($cookies) ? $cookies : array(),
+                is_array($files) ? $files : array(),
+                is_array($server) ? $server : array(),
+                $content !== null ? $content : null
             )
         );
     }
