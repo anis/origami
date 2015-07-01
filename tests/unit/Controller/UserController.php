@@ -59,10 +59,49 @@ class UserController extends atoum
     public function test___createAction___returns200()
     {
         $this
-            ->given($response = $this->post('/users/'))
+            ->given($userData = $this->getNewUser())
+                ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
             ->then
             ->integer($response->getStatusCode())
                 ->isIdenticalTo(200);
+    }
+
+    public function test___createAction___returnsJson()
+    {
+        $this
+            ->given($userData = $this->getNewUser())
+                ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+            ->then
+            ->object($response)
+                ->isInstanceOf('Symfony\Component\HttpFoundation\JsonResponse');
+    }
+
+    public function test___createAction___pushesTheUserToTheDatabase()
+    {
+        $this
+            ->given($userData = $this->getNewUser())
+                ->and($mock = $this->getEntityManager())
+                ->and($this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+            ->then
+            ->mock($mock)
+                ->call('persist')
+                    ->withArguments($userData['entity'])
+                    ->once()
+            ->and
+            ->mock($mock)
+                ->call('flush')
+                    ->once();
+    }
+
+    public function test___createAction___returnsTheNewlyCreatedUser()
+    {
+        $this
+            ->given($userData = $this->getNewUser())
+                ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+                ->and($content = json_decode($response->getContent(), true))
+            ->then
+            ->array($content)
+                ->isIdenticalTo($userData['raw']);
     }
 
     /***************************************************************************
