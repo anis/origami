@@ -55,6 +55,7 @@ class User
     public function toArray()
     {
         return array(
+            'username' => $this->getUsername(),
             'email'    => $this->getEmail(),
             'password' => $this->getPassword(),
         );
