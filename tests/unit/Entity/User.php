@@ -5,37 +5,30 @@ use mageekguy\atoum;
 
 class User extends atoum
 {
-    public function test___usernameGetterSetter()
+    /**
+     * @dataProvider provider___getterSetter
+     */
+    public function test___getterSetter($property)
     {
+        $setterName = 'set' . ucfirst($property);
+        $getterName = 'get' . ucfirst($property);
+
         $this
             ->given($this->newTestedInstance)
-                ->and($username = uniqid())
-                ->and($this->testedInstance->setUsername($username))
+                ->and($value = uniqid())
+                ->and($this->testedInstance->$setterName($value))
             ->then
-            ->string($this->testedInstance->getUsername())
-                ->isIdenticalTo($username);
+            ->string($this->testedInstance->$getterName())
+                ->isIdenticalTo($value);
     }
 
-    public function test___emailGetterSetter()
+    protected function provider___getterSetter()
     {
-        $this
-            ->given($this->newTestedInstance)
-                ->and($email = uniqid())
-                ->and($this->testedInstance->setEmail($email))
-            ->then
-            ->string($this->testedInstance->getEmail())
-                ->isIdenticalTo($email);
-    }
-
-    public function test___passwordGetterSetter()
-    {
-        $this
-            ->given($this->newTestedInstance)
-                ->and($password = uniqid())
-                ->and($this->testedInstance->setPassword($password))
-            ->then
-            ->string($this->testedInstance->getPassword())
-                ->isIdenticalTo($password);
+        return array(
+            array('username'),
+            array('email'),
+            array('password'),
+        );
     }
 
     public function test___toArray()
