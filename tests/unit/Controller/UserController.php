@@ -82,9 +82,15 @@ class UserController extends atoum
         return $mockRepository;
     }
 
-    protected function get($uri)
+    public function __call($method, $arguments)
     {
+        if (!in_array($method, array('get', 'post'))) {
+            return parent::__call($method, $arguments);
+        }
+
+        list($uri) = $arguments;
+
         global $app;
-        return $app->handle(Request::create($uri));
+        return $app->handle(Request::create($uri, strtoupper($method)));
     }
 }
