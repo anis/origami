@@ -205,7 +205,7 @@ class UserController extends atoum
      *
      * @return Symfony\Component\HttpFoundation\Response
      */
-    public function __call($method, $arguments)
+    public function __call($method, array $arguments)
     {
         if (!in_array($method, array('get', 'post'))) {
             return parent::__call($method, $arguments);
