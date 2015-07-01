@@ -35,6 +35,8 @@ class User extends atoum
     {
         $this
             ->given($this->newTestedInstance)
+                ->and($username = uniqid())
+                ->and($this->testedInstance->setUsername($username))
                 ->and($email = uniqid())
                 ->and($this->testedInstance->setEmail($email))
                 ->and($password = uniqid())
@@ -42,6 +44,7 @@ class User extends atoum
             ->then
                 ->array($this->testedInstance->toArray())
                     ->isIdenticalTo(array(
+                        'username' => $username,
                         'email'    => $email,
                         'password' => $password,
                     ));

@@ -51,6 +51,7 @@ class UserController extends atoum
     protected function createUser()
     {
         $user = new User();
+        $user->setUsername(uniqid());
         $user->setEmail(uniqid());
         $user->setPassword(uniqid());
 
