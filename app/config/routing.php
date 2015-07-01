@@ -6,3 +6,4 @@ $app['users'] = $app->factory(function () use($app) {
 });
 
 $app->get('/users/', 'users:listAction');
+$app->post('/users/', 'users:createAction');

@@ -24,4 +24,9 @@ class UserController
 
         return new JsonResponse($users);
     }
+
+    public function createAction()
+    {
+        return "Hello world";
+    }
 }

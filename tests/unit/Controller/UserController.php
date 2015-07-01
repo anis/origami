@@ -48,6 +48,15 @@ class UserController extends atoum
                     ->isIdenticalTo(array_map(function ($user) { return $user['raw']; }, $fakeUsers));
     }
 
+    public function test___createAction___returns200()
+    {
+        $this
+            ->given($response = $this->post('/users/'))
+            ->then
+            ->integer($response->getStatusCode())
+                ->isIdenticalTo(200);
+    }
+
     protected function createUser()
     {
         $user = new User();
