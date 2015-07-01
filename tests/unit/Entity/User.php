@@ -5,6 +5,17 @@ use mageekguy\atoum;
 
 class User extends atoum
 {
+    public function test___usernameGetterSetter()
+    {
+        $this
+            ->given($this->newTestedInstance)
+                ->and($username = uniqid())
+                ->and($this->testedInstance->setUsername($username))
+            ->then
+            ->string($this->testedInstance->getUsername())
+                ->isIdenticalTo($username);
+    }
+
     public function test___emailGetterSetter()
     {
         $this

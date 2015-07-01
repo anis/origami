@@ -1,7 +1,7 @@
 <?php
 namespace Poensis\Origami\Entity;
 
-/** 
+/**
  * @Entity
  */
 class User
@@ -10,12 +10,27 @@ class User
      * @Id
      * @Column(type="string", length=255)
      */
+    protected $username;
+
+    /**
+     * @Column(type="string", length=255, unique=true)
+     */
     protected $email;
 
     /**
      * @Column(type="string", length=255)
      */
     protected $password;
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
 
     public function getEmail()
     {
