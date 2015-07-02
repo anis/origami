@@ -58,6 +58,8 @@ class UserController extends atoum
 
     public function test___createAction___returns200()
     {
+        $this->mockEntityManager();
+
         $this
             ->given($userData = $this->getNewUser())
                 ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
@@ -68,6 +70,8 @@ class UserController extends atoum
 
     public function test___createAction___returnsJson()
     {
+        $this->mockEntityManager();
+
         $this
             ->given($userData = $this->getNewUser())
                 ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
@@ -95,6 +99,8 @@ class UserController extends atoum
 
     public function test___createAction___returnsTheNewlyCreatedUser()
     {
+        $this->mockEntityManager();
+
         $this
             ->given($userData = $this->getNewUser())
                 ->and($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
@@ -131,6 +137,18 @@ class UserController extends atoum
             'entity' => $user,
             'raw'    => $user->toArray(),
         );
+    }
+
+    /**
+     * Alias for ::getEntityManager
+     *
+     * Can be used to make the test cases easier to read.
+     *
+     * @returns \Doctrine\ORM\EntityManager
+     */
+    protected function mockEntityManager()
+    {
+        return $this->getEntityManager();
     }
 
     /**
