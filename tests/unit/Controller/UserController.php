@@ -110,6 +110,49 @@ class UserController extends atoum
                 ->isIdenticalTo($userData['raw']);
     }
 
+    public function test___createAction___withoutUsername___returns400()
+    {
+        $this->mockEntityManager();
+
+        $userData = $this->getNewUser();
+        unset($userData['raw']['username']);
+
+        $this
+            ->given($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+            ->then
+            ->integer($response->getStatusCode())
+                ->isIdenticalTo(400);
+    }
+
+    public function test___createAction___withoutUsername___returnsJson()
+    {
+        $this->mockEntityManager();
+
+        $userData = $this->getNewUser();
+        unset($userData['raw']['username']);
+
+        $this
+            ->given($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+            ->then
+            ->object($response)
+                ->isInstanceOf('Symfony\Component\HttpFoundation\JsonResponse');
+    }
+
+    public function test___createAction___withoutUsername___returnErrorMessage()
+    {
+        $this->mockEntityManager();
+
+        $userData = $this->getNewUser();
+        unset($userData['raw']['username']);
+
+        $this
+            ->given($response = $this->post('/users/', null, null, null, null, json_encode($userData['raw'])))
+                ->and($content = json_decode($response->getContent(), true))
+            ->then
+            ->array($content)
+                ->isIdenticalTo(array('errors' => array('username is mandatory')));
+    }
+
     /***************************************************************************
      * Utilities
      **************************************************************************/
