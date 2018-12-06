@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <title>Origami</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="./invoices.html">📃 Origami</a>
+            
+            <div>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./invoices.html">Factures</a>
+                    </li>
+
+                    <li class="nav-item active">
+                        <a class="nav-link" href="./customers.html">Clients</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="form-group mt-5">
+                <label for="inputName">Nom :</label>
+                <input type="text" class="form-control" id="inputName" placeholder="Nom de la société" />
+            </div>
+
+            <div class="form-group">
+                <label for="inputHeadquarters">Siège social :</label>
+                <textarea class="form-control" id="inputHeadquarters" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="inputVat">Numéro de TVA :</label>
+                <input type="text" class="form-control" id="inputVat" placeholder="Numéro d'identification de TVA de la société" />
+            </div>
+
+            <button type="submit" class="btn btn-primary" onclick="submitForm()">Créer un nouveau client</button>
+        </div>
+
+        <script src="./js/common.js"></script>
+        <script>
+        const elements = {
+            name: document.getElementById('inputName'),
+            headquarters: document.getElementById('inputHeadquarters'),
+            vat: document.getElementById('inputVat'),
+        };
+
+        function collectData() {
+            return {
+                name: elements.name.value,
+                headquarters: elements.headquarters.value,
+                vat_identifier: elements.vat.value,
+            };
+        }
+
+        function submitSuccess() {
+            location.replace('./customers.html');
+        }
+
+        function submitFailure(error) {
+            alert(`Erreur: ${error}`);
+        }
+
+        function submitForm() {
+            addCustomer(collectData())
+                .then(submitSuccess)
+                .catch(submitFailure);
+        }
+        </script>
+    </body>
+</html>

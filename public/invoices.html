@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <title>Origami</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="./invoices.html">📃 Origami</a>
+            
+            <div>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="./invoices.html">Factures</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="./customers.html">Clients</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="mt-5 btn-group">
+                <a href="./newInvoice.html" class="btn btn-secondary">Générer une facture</a>
+            </div>
+
+            <table class="mt-5 table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date d'émission</th>
+                        <th scope="col">Date d'échéance</th>
+                        <th scope="col">Client</th>
+                        <th scope="col">Montant total</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="content"></tbody>
+            </table>
+        </div>
+
+        <script type="text/javascript" src="./js/common.js"></script>
+        <script type="text/javascript">
+        function createInvoiceTr(data) {
+            const tr = document.createElement('tr');
+
+            if (data.is_canceled === true) {
+                tr.setAttribute('class', 'table-danger');
+            }
+
+            let td = document.createElement('td');
+            td.appendChild(document.createTextNode(data.invoice_id));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(data.issuing_date));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(data.deadline));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(data.customer.name));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(`${data.total_amount} €`));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(createButton('👁', requestInvoicePdf.bind(window, data.invoice_id)));
+
+            if (data.is_canceled !== true) {
+                td.appendChild(createButton('🗑', requestInvoiceDeletion.bind(window, data.invoice_id)));
+            }
+
+            tr.appendChild(td);
+
+            return tr;
+        }
+
+        function requestInvoicePdf(invoiceId) {
+            window.open(`./api/invoices/${invoiceId}?format=pdf`, '_blank');
+        }
+
+        function requestInvoiceDeletion(invoiceId) {
+            if (confirm('Êtes-vous sûr de vouloir continuer ?') !== true) {
+                return;
+            }
+
+            deleteInvoice(invoiceId).then(() => {
+                location.reload();
+            });
+        }
+
+        const contentContainer = document.getElementById('content');
+        window.addEventListener('load', () => {
+            getInvoices().then((invoices) => {
+                invoices.forEach((invoice) => {
+                    contentContainer.appendChild(createInvoiceTr(invoice));
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

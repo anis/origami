@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <title>Origami</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="./invoices.html">📃 Origami</a>
+            
+            <div>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="./invoices.html">Factures</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="./customers.html">Clients</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="form-group mt-5">
+                <label for="inputCustomer">Client (<a href="./newCustomer.html" target="__blank">ajouter un nouveau client</a>):</label>
+                <select class="form-control" id="inputCustomer"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="inputDeadline">Echéance à (en jours) :</label>
+                <input type="number" class="form-control" id="inputDeadline" value="30" />
+            </div>
+
+            <div class="form-group">
+                <label for="inputIssuingDate">Date d'émission (laisser vide pour aujourd'hui) :</label>
+                <input type="text" maxlength="10" class="form-control" id="inputIssuingDate" placeholder="jj/mm/AAAA" />
+            </div>
+
+            <div class="form-group">
+                <label for="inputServiceBeginning">Prestation du :</label>
+                <input type="text" maxlength="10" class="form-control" id="inputServiceBeginning" placeholder="jj/mm/AAAA" />
+                <label for="inputServiceEnd">au :</label>
+                <input type="text" maxlength="10" class="form-control" id="inputServiceEnd" placeholder="jj/mm/AAAA" />
+            </div>
+
+            <div class="form-group">
+                <label>Lignes de frais :</label>
+                <p style="text-align: right"><button class="btn btn-secondary" onclick="addLine()">Ajouter une ligne</button></p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Label</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Prix unique</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="costs">
+                        <tr>
+                            <td><input type="text" readonly value="Mission de développement" class="form-control" name="inputCostLabel" /></td>
+                            <td><input type="number" class="form-control" name="inputCostQuantity" /><input type="hidden" name="inputCostType" value="j/h" /></td>
+                            <td><input type="number" class="form-control" name="inputCostPrice" /></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" onclick="preview()">Aperçu</button>
+            <button type="submit" class="btn btn-primary" onclick="submitForm()">Générer la facture</button>
+        </div>
+
+        <script src="./js/common.js"></script>
+        <script>
+        const elements = {
+            customer: document.getElementById('inputCustomer'),
+            deadline: document.getElementById('inputDeadline'),
+            issuingDate: document.getElementById('inputIssuingDate'),
+            serviceBeginning: document.getElementById('inputServiceBeginning'),
+            serviceEnd: document.getElementById('inputServiceEnd'),
+            costs: document.getElementById('costs'),
+        };
+
+        function collectData() {
+            const costElements = {
+                label: document.getElementsByName('inputCostLabel'),
+                quantity: document.getElementsByName('inputCostQuantity'),
+                type: document.getElementsByName('inputCostType'),
+                price: document.getElementsByName('inputCostPrice'),
+            };
+
+            const costs = [];
+            for (let i = 0, len = costElements.label.length; i < len; i += 1) {
+                costs.push({
+                    label: costElements.label[i].value,
+                    quantity: parseInt(costElements.quantity[i].value, 10),
+                    type: costElements.type[i].value,
+                    price: parseFloat(costElements.price[i].value, 10),
+                });
+            }
+
+            const data = {
+                customer_id: elements.customer.value,
+                deadline: parseInt(elements.deadline.value, 10),
+                service_beginning: fromDateToTimestamp(elements.serviceBeginning.value),
+                service_end: fromDateToTimestamp(elements.serviceEnd.value),
+                costs
+            };
+
+            if (elements.issuingDate.value) {
+                data.issuing_date = fromDateToTimestamp(elements.issuingDate.value);
+            }
+
+            return data;
+        }
+
+        function fromDateToTimestamp(date) {
+            const [ day, month, year ] = date.split('/');
+            const d = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+
+            return d.getTime() / 1000;
+        }
+
+        function submitSuccess() {
+            location.replace('./invoices.html');
+        }
+
+        function submitFailure(error) {
+            alert(`Erreur: ${error}`);
+        }
+
+        function preview() {
+            previewInvoice(collectData())
+                .then((response) => {
+                    window.open(window.URL.createObjectURL(response));
+                })
+                .catch((error) => {
+                    alert(`Erreur: ${error}`);
+                });
+        }
+
+        function submitForm() {
+            addInvoice(collectData())
+                .then(submitSuccess)
+                .catch(submitFailure);
+        }
+
+        function createCustomerOption({ customer_id, name} = customer) {
+            const option = document.createElement('option');
+            option.setAttribute('value', customer_id);
+            option.appendChild(document.createTextNode(name));
+
+            return option;
+        }
+
+        function createInput(type, name) {
+            const input = document.createElement('input');
+            input.setAttribute('type', type);
+            input.setAttribute('class', 'form-control');
+            input.setAttribute('name', name);
+
+            return input;
+        }
+
+        function removeLine(tr) {
+            tr.parentNode.removeChild(tr);
+        }
+
+        function createCostTr() {
+            const tr = document.createElement('tr');
+
+            let td = document.createElement('td');
+            td.appendChild(createInput('text', 'inputCostLabel'));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(createInput('number', 'inputCostQuantity'));
+            td.appendChild(createInput('hidden', 'inputCostType'));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(createInput('number', 'inputCostPrice'));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(createButton('🗑', removeLine.bind(window, tr)));
+            tr.appendChild(td);
+
+            return tr;
+        }
+
+        function addLine() {
+            elements.costs.appendChild(createCostTr());
+        }
+
+        window.addEventListener('load', () => {
+            getCustomers().then((customers) => {
+                customers.forEach((customer) => {
+                    elements.customer.appendChild(createCustomerOption(customer));
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

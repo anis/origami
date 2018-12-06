@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "target": "ES2015",
+      "baseUrl": ".",
+      "checkJs": true
+    },
+    "exclude": [
+      "node_modules",
+      "**/node_modules/*"
+    ]
+}
