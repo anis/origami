@@ -95,7 +95,7 @@ class InvoiceService
 
         $this->buildFooter($pdf);
 
-        if ($this->data['is_canceled'] === true) {
+        if (isset($this->data['is_canceled']) && $this->data['is_canceled'] === true) {
             $pdf->SetFontSize(150);
             $pdf->SetTextColor(200, 200, 200);
             $pdf->TextWithRotation(20,250, utf8_decode('ANNULÉE'),45,-45);
