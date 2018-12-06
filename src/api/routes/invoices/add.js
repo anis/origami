@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
 
     formattedDates.deadline = new Date(issuingDate.getTime());
     formattedDates.deadline.setDate(formattedDates.deadline.getDate() + deadline);
-    console.log(costs);
+
     if (req.query.preview !== undefined) {
         const { rows } = await db.query('SELECT * FROM customers WHERE customers.customer_id = $1', [customer_id]);
 

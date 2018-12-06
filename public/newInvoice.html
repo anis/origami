@@ -103,7 +103,7 @@
             for (let i = 0, len = costElements.label.length; i < len; i += 1) {
                 costs.push({
                     label: (i === 0 ? document.getElementById('mandatoryCostLabel').value + "\n" : '') + costElements.label[i].value,
-                    quantity: parseInt(costElements.quantity[i].value, 10),
+                    quantity: parseFloat(costElements.quantity[i].value, 10),
                     type: costElements.type[i].value,
                     price: parseFloat(costElements.price[i].value, 10),
                 });
