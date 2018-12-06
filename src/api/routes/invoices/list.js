@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
             INNER JOIN customers ON invoices.fk_customer_id = customers.customer_id
             INNER JOIN costs ON costs.fk_invoice_id = invoices.invoice_id
             GROUP BY invoices.invoice_id, customers.customer_id
-            ORDER BY invoices.issuing_date DESC`,
+            ORDER BY invoices.issuing_date DESC, invoices.canceled ASC, invoice_identifier DESC`,
         );
         res.status(200).json({
             data: result.rows.map(convertFromDb),

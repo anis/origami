@@ -15,7 +15,7 @@ module.exports = {
     convertFromDb(dbInvoice) {
         return {
             invoice_id: dbInvoice.invoice_id,
-            identifier: formatIdentifier(dbInvoice.issuing_date, dbInvoice.invoice_identifier),
+            identifier: dbInvoice.canceled === true ? 'N/A' : formatIdentifier(dbInvoice.issuing_date, dbInvoice.invoice_identifier),
             is_canceled: dbInvoice.canceled,
             deadline: toString(dbInvoice.deadline),
             issuing_date: toString(dbInvoice.issuing_date),

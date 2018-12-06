@@ -64,7 +64,10 @@
                     </thead>
                     <tbody id="costs">
                         <tr>
-                            <td><input type="text" readonly value="Mission de développement" class="form-control" name="inputCostLabel" /></td>
+                            <td>
+                                <input type="text" readonly value="Mission de développement" class="form-control" id="mandatoryCostLabel" />
+                                <input type="text" value="" placeholder="Précision quelconque (optionnel)" class="form-control" name="inputCostLabel" />
+                            </td>
                             <td><input type="number" class="form-control" name="inputCostQuantity" /><input type="hidden" name="inputCostType" value="j/h" /></td>
                             <td><input type="number" class="form-control" name="inputCostPrice" /></td>
                             <td></td>
@@ -99,7 +102,7 @@
             const costs = [];
             for (let i = 0, len = costElements.label.length; i < len; i += 1) {
                 costs.push({
-                    label: costElements.label[i].value,
+                    label: (i === 0 ? document.getElementById('mandatoryCostLabel').value + "\n" : '') + costElements.label[i].value,
                     quantity: parseInt(costElements.quantity[i].value, 10),
                     type: costElements.type[i].value,
                     price: parseFloat(costElements.price[i].value, 10),

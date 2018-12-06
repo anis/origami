@@ -36,6 +36,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
+                        <th scipe="col">Identifiant</th>
                         <th scope="col">Date d'émission</th>
                         <th scope="col">Date d'échéance</th>
                         <th scope="col">Client</th>
@@ -58,6 +59,10 @@
 
             let td = document.createElement('td');
             td.appendChild(document.createTextNode(data.invoice_id));
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.appendChild(document.createTextNode(data.identifier));
             tr.appendChild(td);
 
             td = document.createElement('td');

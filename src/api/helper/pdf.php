@@ -38,6 +38,7 @@ class InvoiceService
         'regular' => 10,
         'title'   => 10,
         'footer'  => 8,
+        'bic'     => 4,
     );
 
     const HEADER_HEIGHT = 15;
@@ -323,6 +324,14 @@ class InvoiceService
 
     protected function buildFooter(\PDF $pdf)
     {
+        $pdf->SetXY($this->margins['h'], $pdf->GetPageHeight() - 53);
+        $pdf->SetFont('Roboto', 'BI', $this->fontSize['footer']);
+        $pdf->MultiCell($pdf->GetPageWidth() - (2 * $this->margins['h']), 5, utf8_decode('Réglement par virement :'), 0, 'C');
+
+        $pdf->SetXY($this->margins['h'], $pdf->GetPageHeight() - 48);
+        $pdf->SetFont('Roboto', 'I', $this->fontSize['footer']);
+        $pdf->MultiCell($pdf->GetPageWidth() - (2 * $this->margins['h']), 5, utf8_decode('IBAN : FR76 3000 3018 6100 0270 0309 832 / BIC - Adresse SWIFT : SOGEFRPP'), 0, 'C');
+
         $pdf->Line($this->margins['h'], $pdf->GetPageHeight() - 40, $pdf->GetPageWidth() - $this->margins['h'], $pdf->GetPageHeight() - 40);
 
         $pdf->SetXY($this->margins['footer'], $pdf->GetPageHeight() - 36);
@@ -337,24 +346,35 @@ class InvoiceService
 
     protected function getSplitLines(\PDF $pdf, $str, $maxWidth, $padding = 0)
     {
-        $words = explode(' ', $str);
-        $lines = array();
+        $naturalLines = explode("\n", $str);
 
-        foreach ($words as $word) {
-            if (count($lines) === 0) {
-                $lines[] = $word;
-                continue;
+        if (count($naturalLines) === 1) {
+            $words = explode(' ', $str);
+            $lines = array();
+
+            foreach ($words as $word) {
+                if (count($lines) === 0) {
+                    $lines[] = $word;
+                    continue;
+                }
+
+                $lastLine = end($lines) . ' ' . $word;
+                if ($pdf->GetStringWidth($lastLine) + (2 * $padding) <= $maxWidth) {
+                    $lines[count($lines) - 1] = $lastLine;
+                } else {
+                    $lines[] = $word;
+                }
             }
 
-            $lastLine = end($lines) . ' ' . $word;
-            if ($pdf->GetStringWidth($lastLine) + (2 * $padding) <= $maxWidth) {
-                $lines[count($lines) - 1] = $lastLine;
-            } else {
-                $lines[] = $word;
+            return $lines;
+        } else {
+            $lines = array();
+            foreach ($naturalLines as $line) {
+                $lines = array_merge($lines, $this->getSplitLines($pdf, $line, $maxWidth, $padding));
             }
+
+            return $lines;
         }
-
-        return $lines;
     }
 
 }
