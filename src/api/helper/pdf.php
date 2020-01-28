@@ -80,7 +80,7 @@ class InvoiceService
 
         $y = $pdf->GetY() + 10;
         $this->buildCompanyCard($pdf, $pdf->GetX(), $y, 'PRESTATAIRE', array(
-            'name'    => 'POENSIS SARL // 80980601100015 // 6201Z',
+            'name'    => 'POENSIS SARL // 80980601100023 // 6201Z',
             'address' => '1 rue Vincent Van Gogh' . "\n" . '78480 VERNEUIL-SUR-SEINE',
             'vat'     => 'FR83809806011',
         ));
